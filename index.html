@@ -133,19 +133,17 @@
         // set0 is the default location of images in the main set; but it could be anywhere on the web as long as the URLs are correct.
 
         // Don't edit below this line unless you know what you're doing
-        window.addEventListener('load', () => {
             // Deduce the parent's origin from the current location
-            let parentOrigin = window.location.origin || '*';
-            if (parentOrigin === 'null') {
-                parentOrigin = '*'; // Fallback to wildcard if origin cannot be determined
+            let origin = window.location.origin || '*';
+            if (origin === 'null') {
+                origin = '*'; // Fallback to wildcard if origin cannot be determined
             }
             window.parent.postMessage({
                 animals: animals,
                 species: species,
                 images_path: images_path
-            }, parentOrigin);
+            }, origin);
         });
-    </script>
 </head>
 
 <body>
