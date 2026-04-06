@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set 1</title>
+    <script>
+        /*
+        
+        You can have up to 30 animals in a set
+
+        For every animal,
+        - pick a dobble card (a line in the output below)
+        - fill the dom array with the dominance pattern you want for this animal (1 if it dominates the other animal on the card, -1 if it's dominated)
+        - species, sex F/M, diet herb/carn, r=rhythm (2..15) and ph=phase (0..0.99) are up to you
+        - you may also define an image property with the URL of the animal's image to overwrite te default spx_sex.png
+
+        You can create your own species, but make sure to update the "species" object below with the species name
+        
+        Dobble cards:
+        0 [0,1,2,3,4,5]
+        1 [0,6,11,16,21,26]
+        2 [0,7,12,17,22,27]
+        3 [0,8,13,18,23,28]
+        4 [0,9,14,19,24,29]
+        5 [0,10,15,20,25,30]
+        6 [1,6,12,18,24,30]
+        7 [1,7,13,19,25,26]
+        8 [1,8,14,20,21,27]
+        9 [1,9,15,16,22,28]
+        10 [1,10,11,17,23,29]
+        11 [2,6,13,20,22,29]
+        12 [2,7,14,16,23,30]
+        13 [2,8,15,17,24,26]
+        14 [2,9,11,18,25,27]
+        15 [2,10,12,19,21,28]
+        16 [3,6,14,17,25,28]
+        17 [3,7,15,18,21,29]
+        18 [3,8,11,19,22,30]
+        19 [3,9,12,20,23,26]
+        20 [3,10,13,16,24,27]
+        21 [4,6,15,19,23,27]
+        22 [4,7,11,20,24,28]
+        23 [4,8,12,16,25,29]
+        24 [4,9,13,17,21,30]
+        25 [4,10,14,18,22,26]
+        26 [5,6,7,8,9,10]
+        27 [5,11,12,13,14,15]
+        28 [5,16,17,18,19,20]
+        29 [5,21,22,23,24,25]
+
+        */
+        const animals = [
+            { name: 'Ceridwen', emoji: '🦌', sex: 'F', sp: 'herb', spx: 'deer', r: 9, ph: 0.15, dob: [0, 6, 11, 16, 21, 26], dom: [-1, 1, -1, 1, -1, 1], cost: 0 },
+            { name: 'Reynard', emoji: '🦊', sex: 'M', sp: 'carn', spx: 'fox', r: 4, ph: 0.30, dob: [3, 9, 12, 20, 23, 26], dom: [1, 1, -1, -1, 1, -1], cost: 0 },
+            { name: 'Sköll', emoji: '🐺', sex: 'M', sp: 'carn', spx: 'wolf', r: 6, ph: 0.00, dob: [0, 1, 2, 3, 4, 5], dom: [1, -1, 1, -1, 1, -1], cost: 1 },
+            { name: 'Ondine', emoji: '🦦', sex: 'F', sp: 'carn', spx: 'otter', r: 8, ph: 0.85, dob: [3, 7, 15, 18, 21, 29], dom: [1, -1, 1, -1, 1, -1], cost: 5 },
+            { name: 'Aries', emoji: '🐏', sex: 'M', sp: 'herb', spx: 'sheep', r: 12, ph: 0.08, dob: [2, 6, 13, 20, 22, 29], dom: [1, -1, 1, -1, 1, -1], cost: 80 },
+            { name: 'Sylvia', emoji: '🐈', sex: 'F', sp: 'carn', spx: 'lynx', r: 15, ph: 0.50, dob: [2, 10, 12, 19, 21, 28], dom: [1, -1, 1, -1, 1, -1], cost: 90 },
+            { name: 'Kasha', emoji: '🐱', sex: 'M', sp: 'carn', spx: 'lynx', r: 10, ph: 0.20, dob: [2, 9, 11, 18, 25, 27], dom: [1, 1, -1, 1, -1, 1], cost: 120 },
+            { name: 'Clover', emoji: '🐇', sex: 'F', sp: 'herb', spx: 'rabbit', r: 12, ph: 0.45, dob: [1, 6, 12, 18, 24, 30], dom: [-1, 1, -1, 1, -1, 1], cost: 160 },
+            { name: 'Cernunos', emoji: '🦌', sex: 'M', sp: 'herb', spx: 'deer', r: 9, ph: 0.70, dob: [0, 9, 14, 19, 24, 29], dom: [1, -1, -1, 1, 1, -1], cost: 180 },
+            { name: 'Ginger', emoji: '🦊', sex: 'F', sp: 'carn', spx: 'fox', r: 6, ph: 0.18, dob: [0, 10, 15, 20, 25, 30], dom: [-1, 1, 1, -1, -1, 1], cost: 400 },
+            { name: 'Taurus', emoji: '🐂', sex: 'M', sp: 'herb', spx: 'cattle', r: 6, ph: 0.33, dob: [2, 7, 14, 16, 23, 30], dom: [-1, 1, -1, 1, -1, 1], cost: 500 },
+            { name: 'Hathor', emoji: '🐄', sex: 'F', sp: 'herb', spx: 'cattle', r: 8, ph: 0.66, dob: [2, 8, 15, 17, 24, 26], dom: [1, -1, 1, -1, 1, -1], cost: 800 },
+            { name: 'Bjorn', emoji: '🐻', sex: 'M', sp: 'carn', spx: 'bear', r: 2, ph: 0.10, dob: [1, 9, 15, 16, 22, 28], dom: [1, -1, 1, -1, 1, -1], cost: 1300 },
+            { name: 'Diana', emoji: '🐻', sex: 'F', sp: 'carn', spx: 'bear', r: 3, ph: 0.60, dob: [1, 8, 14, 20, 21, 27], dom: [-1, 1, -1, 1, -1, 1], cost: 1400 },
+            { name: 'Luna', emoji: '🐺', sex: 'F', sp: 'carn', spx: 'wolf', r: 6, ph: 0.42, dob: [0, 8, 13, 18, 23, 28], dom: [-1, -1, 1, 1, -1, 1], cost: 1500 },
+            { name: 'Neptune', emoji: '🦦', sex: 'M', sp: 'carn', spx: 'otter', r: 7, ph: 0.05, dob: [3, 6, 14, 17, 25, 28], dom: [-1, 1, -1, 1, -1, 1], cost: 1600 },
+            { name: 'Cotton', emoji: '🐰', sex: 'M', sp: 'herb', spx: 'rabbit', r: 7, ph: 0.55, dob: [1, 7, 13, 19, 25, 26], dom: [-1, -1, 1, -1, 1, -1], cost: 2000 },
+            { name: 'Briseïs', emoji: '🐑', sex: 'F', sp: 'herb', spx: 'sheep', r: 8, ph: 0.72, dob: [1, 10, 11, 17, 23, 29], dom: [-1, 1, -1, 1, -1, 1], cost: 2200 },
+            { name: 'Zephir', emoji: '🐴', sex: 'M', sp: 'herb', spx: 'horse', r: 2, ph: 0.00, dob: [3, 8, 11, 19, 22, 30], dom: [-1, 1, -1, 1, -1, 1], cost: 2400 },
+            { name: 'Aurora', emoji: '🦄', sex: 'F', sp: 'herb', spx: 'horse', r: 2, ph: 0.25, dob: [0, 7, 12, 17, 22, 27], dom: [1, -1, 1, -1, 1, -1], cost: 2600 }
+        ];
+
+        const species = {
+            deer: 'Deer',
+            fox: 'Fox',
+            wolf: 'Wolf',
+            otter: 'Otter',
+            sheep: 'Sheep',
+            lynx: 'Lynx',
+            rabbit: 'Rabbit',
+            cattle: 'Cattle',
+            bear: 'Bear',
+            horse: 'Horse'
+        };
+
+        // you can create custom achievements for your set, just make sure to give them an id
+        // that doesn't conflict with the main game's achievements
+        // and include a "check string" as with the examples bellow
+
+        // Did you know an achievement can have its own custom image?
+        // You can add an "image" property with the URL of the image you want to use
+        // (e.g. upload it somewhere or encode it in base64) and it will be displayed
+        //  in the achievement card when unlocked
+        let SET_ACHIEVEMENTS = [
+            {
+                id: 'wolf_pair', emoji: '🐺', name: 'Pack', desc: 'Form a wolf couple',
+                check: 'spx wolf'
+            },
+            {
+                id: 'bear_pair', emoji: '🐻', name: 'Bear Clan', desc: 'Form a bear couple',
+                check: 'spx bear'
+            },
+            {
+                id: 'horse_pair', emoji: '🦄', name: 'Free Gallop', desc: 'Form a horse couple',
+                check: 'spx horse'
+            },
+            {
+                id: 'little_kit', emoji: '🦊', name: 'Little Fox Cub', desc: '+ 500 ◈/min with the fox and vixen',
+                check: 'rate 500 spx fox '
+            },
+            {
+                id: 'little_fawn', emoji: '🦋', name: 'Little Fawn', desc: '+ 800 ◈/min with the stag and doe',
+                check: 'rate 800 spx deer'
+            },
+            {
+                id: 'little_foal', emoji: '🐴', name: 'Little Foal', desc: '+ 1000 ◈/min with the stallion and mare',
+                check: 'rate 1000 spx horse'
+            },
+            {
+                id: 'size_doesnt_matter', emoji: '📏', name: 'Size Doesn\'t Matter', desc: 'Clover + Torus',
+                check: 'pair Clover+Taurus',
+                // image: 'https://example.com/spectacular_clover_taurus_couple.jpg' // you can add a custom image for the achievement if you want
+            }
+        ];
+
+        // images for the animals should be placed in the folder defined below
+        // Naming convention for images: {images_path}/{animal.spx}_{animal.sex}.png or {images_path}/{animal.image}.png
+        const images_path = 'set0/png/';
+        // set0 is the default location of images in the main set; but it could be anywhere on the web as long as the URLs are correct.
+
+        // Don't edit below this line unless you know what you're doing
+        window.addEventListener('load', () => {
+            // Deduce the parent's origin from the current location
+            let parentOrigin = window.location.origin || '*';
+            if (parentOrigin === 'null') {
+                parentOrigin = '*'; // Fallback to wildcard if origin cannot be determined
+            }
+            window.parent.postMessage({
+                animals: animals,
+                species: species,
+                images_path: images_path
+            }, parentOrigin);
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Demonstration Set</h1>
+    <p>This page is meant to be loaded in the "Resonance" game</p>
+</body>
+
+</html>
