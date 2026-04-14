@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resonance Level Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    input, select, button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .animal-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border-radius: 5px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .animals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .animal-card {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      padding: 15px;
+      background-color: #fff9f0;
+      border-radius: 5px;
+      border: 1px solid #eee;
+    }
+
+    .animal-card-header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .species-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #f0fff0;
+      border-radius: 5px;
+    }
+
+    .species-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .species-key {
+      font-weight: bold;
+      min-width: 100px;
+    }
+
+    .export-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #fff0f0;
+      border-radius: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: monospace;
+      resize: vertical;
+      min-height: 200px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .small-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .animal-thumbnail {
+      width: 100%;
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: block;
+      margin-top: 5px;
+    }
+    .animal-thumbnail-link {
+      display: inline-block;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Resonance Level Generator</h1>
+
+    <div class="api-key-section" style="margin-bottom: 20px; padding: 15px; background-color: #f0f0ff; border-radius: 5px;">
+      <h3 style="margin-top: 0;">ImgBB API Key (for image uploads)</h3>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="password" id="api-key-input" placeholder="Enter your ImgBB API key" style="flex: 1;" value="">
+        <button id="save-api-key-btn" style="padding: 8px 16px;">Save Key</button>
+      </div>
+      <small>Get a free API key from <a href="https://imgbb.com/" target="_blank">ImgBB</a>. The key will be saved in your browser.</small>
+      <div id="api-key-status" style="font-size: 12px; color: #666; margin-top: 5px;"></div>
+    </div>
+
+    <div class="images-path-section" style="margin-bottom: 20px; padding: 15px; background-color: #f0f0ff; border-radius: 5px;">
+      <h3 style="margin-top: 0;">Images Path</h3>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="images-path-input" placeholder="e.g., set0/png/" style="flex: 1;" value="set0/png/">
+      </div>
+      <small>Base path for animal images (e.g., <code>set0/png/</code>).</small>
+    </div>
+
+    <div class="add-animal-section" style="margin-bottom: 20px; padding: 15px; background-color: #f0f0ff; border-radius: 5px;">
+      <h3 style="margin-top: 0;">New Animal</h3>
+      <div class="animal-form">
+        <div class="form-row">
+          <label for="animal-name">Name:</label>
+          <input type="text" id="animal-name" placeholder="Animal name">
+        </div>
+
+        <div class="form-row">
+          <label for="animal-emoji">Emoji:</label>
+          <div style="display: flex; gap: 5px;">
+            <select id="animal-emoji-select" style="flex: 1;">
+              <option value="">-- Select emoji --</option>
+            </select>
+            <input type="text" id="animal-emoji" size=1 placeholder="🐺" style="flex: 1;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="animal-image">Image (optional):</label>
+          <input type="file" id="animal-image" accept="image/*">
+          <small>Upload an image for this animal (requires ImgBB API key in generator.js)</small>
+          <div id="image-upload-status" style="font-size: 12px; color: #666;"></div>
+          <div style="margin-top: 5px;">
+            <small>Or enter image URL:</small>
+            <input type="text" id="animal-image-url" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 4px; font-size: 12px;">
+          </div>
+          <div id="existing-image-section" style="margin-top: 5px; display: none;">
+            <small>Existing image: <a id="existing-image-link" href="" target="_blank">View</a>
+            <button id="clear-existing-image-btn" class="small-btn">Clear</button></small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="animal-sex">Sex:</label>
+          <select id="animal-sex">
+            <option value="M">Male (M)</option>
+            <option value="F">Female (F)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="animal-sp">Species Type:</label>
+          <select id="animal-sp">
+            <option value="carn">Carnivore (carn)</option>
+            <option value="herb">Herbivore (herb)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="animal-spx">Species:</label>
+          <select id="animal-spx-select" style="flex: 1;">
+            <option value="">-- Select or create new --</option>
+          </select>
+          <input type="text" id="animal-spx-input" placeholder="New species" style="flex: 1;">
+      </div>
+
+        <div class="form-row">
+          <label for="animal-r">Rhythm (r):</label>
+          <input type="number" id="animal-r" min="1" max="30" value="6">
+        </div>
+
+        <div class="form-row">
+          <label for="animal-ph">Phase (ph):</label>
+          <input type="number" id="animal-ph" min="0" max="1" step="0.01" value="0.0">
+        </div>
+
+        <div class="form-row">
+          <label for="animal-head">Head Circle (optional):</label>
+          <input type="number" id="animal-head-x" placeholder="x" min="0" step="1" style="flex: 1;">
+          <input type="number" id="animal-head-y" placeholder="y" min="0" step="1" style="flex: 1;">
+          <input type="number" id="animal-head-r" placeholder="r" min="0" step="1" style="flex: 1;">
+          <small>Define circle around head [x, y, radius] in pixels (use the visual editor for best results)</small>
+        </div>
+
+        <div class="form-row" style="grid-column: 1 / -1;">
+          <button id="add-animal-btn">Add Animal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="animals-list" id="animals-list">
+      <h2>Added Animals</h2>
+    </div>
+
+    <div class="species-section">
+      <h2>Species</h2>
+      <div id="species-list"></div>
+    </div>
+
+    <div class="export-section">
+      <h2>Export</h2>
+      <div class="btn-group">
+        <button id="download-btn">Download index.html</button>
+        <button id="clear-btn">Clear All</button>
+        <button id="edit-btn">Edit Code</button>
+        <button id="apply-btn" style="display: none;">Apply Changes</button>
+      </div>
+      <textarea id="generated-code" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- Head Editor Modal -->
+  <div id="head-editor-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; overflow: auto;">
+    <div style="background-color: white; margin: 50px auto; padding: 20px; border-radius: 8px; max-width: 800px; position: relative;">
+      <h2 id="head-editor-title" style="margin-top: 0;">Edit Head Position</h2>
+      <button id="close-head-editor" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="font-weight: bold;">Animal: <span id="head-editor-animal-name"></span></label>
+      </div>
+      
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <div style="border: 1px solid #ddd; padding: 10px; border-radius: 4px; background-color: #f9f9f9;">
+            <h3 style="margin-top: 0; font-size: 16px;">Instructions</h3>
+            <p style="margin-bottom: 10px; font-size: 14px;">
+              Drag the handles to define the bounding box for the head circle.<br>
+              The green circle will be drawn to fit within the bounding box.
+            </p>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label style="font-size: 12px; display: block;">Top-Left Handle:</label>
+                <div style="font-size: 12px;">X: <span id="tl-x">0.0</span>, Y: <span id="tl-y">0.0</span></div>
+              </div>
+              <div>
+                <label style="font-size: 12px; display: block;">Bottom-Right Handle:</label>
+                <div style="font-size: 12px;">X: <span id="br-x">1.0</span>, Y: <span id="br-y">1.0</span></div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <div>
+                <label style="font-size: 12px; display: block;">Circle Center:</label>
+                <div style="font-size: 12px;">X: <span id="center-x">0.5</span>, Y: <span id="center-y">0.5</span></div>
+              </div>
+              <div>
+                <label style="font-size: 12px; display: block;">Circle Radius:</label>
+                <div style="font-size: 12px;"><span id="radius">0.5</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="flex: 2;">
+          <div style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+            <svg id="head-editor-svg" width="400" height="400" style="background-color: white; display: block;"></svg>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button id="cancel-head-editor" style="padding: 8px 16px; background-color: #ccc; color: black; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+        <button id="confirm-head-editor" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="generator.js"></script>
+</body>
+</html>

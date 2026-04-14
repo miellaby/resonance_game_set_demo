@@ -1,0 +1,24 @@
+/* Generator-specific styles */
+
+/* Ensure the generator works well in an iframe */
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .animal-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .animal-card {
+    grid-template-columns: 1fr;
+  }
+}
